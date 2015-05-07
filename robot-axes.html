@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+ <head> 
+  <title>Example 7 - Trackball camera controls</title> 
+  <style>
+    body{
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #stats {  /* Align stats top-left */
+      position: absolute;
+      left: 0px;
+      top: 0px;
+    }
+  </style> 
+  </head>
+  <body>
+    <div id="container"></div>
+  <!-- JavaScript libraries -->
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> 
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r67/three.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+  <script src="assets/libs/TrackballControls.js"></script>
+  <!-- Javascript code that runs our Three.js examples --> 
+  <script>
+    // once everything is loaded, we run our Three.js stuff.
+    $( function ( ) {
+
+      var stats = initStats( );
+
+      // create a scene, that will hold all our elements such as objects, cameras and lights.
+      var scene = new THREE.Scene( );
+
+      // create a camera, which defines where we're looking at.
+      var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+      // create a render and set the size
+      var renderer = new THREE.WebGLRenderer( );
+
+      // create trackball controls
+      var trackballControls = new THREE.TrackballControls( camera );
+
+      renderer.setClearColor( new THREE.Color( 0xEEEEEE, 1.0 ) );
+      renderer.setSize( window.innerWidth, window.innerHeight );
+
+      //create a fake object
+      var o0 = new THREE.Object3D( );
+
+      //add the fake object to the scene
+      scene.add( o0 );
+
+      //create base for the meccanic arm
+      var b_geometry = new THREE.CircleGeometry( 3, 60 );
+      var b_material = new THREE.MeshLambertMaterial( {color: 0xCC00ff} );
+      var b = new THREE.Mesh( b_geometry, b_material );
+
+      //position base
+
+      b.rotation.x = -Math.PI / 2;
+
+      //add base to fake object
+      o0.add( b );
+
+      //create torus
+      var t1_geometry = new THREE.TorusGeometry( 1.1, 0.4, 32, 100 );
+      var t1_material = new THREE.MeshLambertMaterial( {color: 0xFF0000} ); 
+      var t1 = new THREE.Mesh( t1_geometry, t1_material );
+
+      // var t1_axis = new THREE.AxisHelper( 1 );
+      // t1.add( t1_axis );
+
+      //positionate torus on the first fake object
+      t1.rotation.x = -Math.PI/2;
+      t1.position.y = 0.4;
+
+      //add torus at the first fake object
+      o0.add( t1 );
+
+      //create the first sphere
+      var s1_geometry = new THREE.SphereGeometry( 0.8, 40, 40 );
+      var s1_material = new THREE.MeshLambertMaterial( {color: 0x7777ff} );
+      var s1 = new THREE.Mesh( s1_geometry, s1_material );
+
+      // var s1_axis = new THREE.AxisHelper( 1 );
+      // s1.add( s1_axis );
+
+      //position the first sphere
+      s1.position.y = 0.8;
+
+      //stich sphere on the first fake object
+      o0.add( s1 );
+
+      //create a second fake object
+      var o1 = new THREE.Object3D( );
+
+      s1.add( o1 );
+
+      //create the first cylinder
+      var c1_geometry = new THREE.CylinderGeometry( 0.8, 0.8, 6, 32, 6 );
+      var c1_material = new THREE.MeshLambertMaterial( {color: 0xff7777} );
+      var c1 = new THREE.Mesh( c1_geometry, c1_material );
+
+      //add axis to the first cylinder
+      //var c1_axis = new THREE.AxisHelper( 3 );
+      //c1.add( c1_axis );
+
+      // c1.rotation.x = -Math.PI/2;
+      c1.position.y = 3 + 0.8;
+
+      o1.add( c1 );
+
+      //create the second sphere
+      var s2_geometry = new THREE.SphereGeometry( 0.8, 40, 40 );
+      var s2_material = new THREE.MeshLambertMaterial( {color: 0x77ffff} );
+      var s2 = new THREE.Mesh( s2_geometry, s2_material );
+
+      //add the second sphere to the cylinder
+      c1.add( s2 );
+
+      //translate the second sphere up
+      s2.position.y = 3 + 0.8;
+
+      //create and stitch axis to second sphere
+      // var s2_axis = new THREE.AxisHelper( 1 );
+      // s2.add( s2_axis );
+
+      //create a third fake object
+      var o2 = new THREE.Object3D( );
+
+      //add the fake object to the second sphere
+      s2.add( o2 );
+
+      //create the second cylinder
+      var c2_geometry = new THREE.CylinderGeometry( 0.8, 0.8, 6, 32, 6 );
+      var c2_material = new THREE.MeshLambertMaterial( {color: 0xff7777} );
+      var c2 = new THREE.Mesh( c2_geometry, c2_material );
+
+      //add axis to the first cylinder
+      // var c2_axis = new THREE.AxisHelper( 3 );
+      // c2.add( c2_axis );
+
+      //position the second cylinder
+      c2.position.y = 3 + 0.8;
+
+      //add the third cylinder to the third fake object
+      o2.add( c2 );
+
+      //create a fourth fake object
+      var o3 = new THREE.Object3D( );
+
+      //add the fake object to the second cylinder
+      c2.add( o3 );
+
+      var c3_geometry = new THREE.CylinderGeometry( 0.8, 0.8, 6, 32, 6 );
+      var c3_material = new THREE.MeshLambertMaterial( {color: 0xff7777} );
+      var c3 = new THREE.Mesh( c3_geometry, c3_material );
+
+      //add axis to the third cylinder
+      // var c3_axis = new THREE.AxisHelper( 3 );
+      // c3.add( c3_axis );
+
+      //position the third cylinder
+      c3.position.y = 3;
+      c3.position.z = 0.8;
+      c3.rotation.z = Math.PI / 2;
+
+      //add the cylinder to the third object
+      o3.add( c3 );
+
+      // position and point the camera to the center of the scene
+      camera.position.set( -30, 40, 30 );
+      camera.up = new THREE.Vector3( 0, 1, 0 );
+      camera.lookAt( scene.position );
+
+      // add subtle ambient lighting
+      var ambientLight = new THREE.AmbientLight( 0x0c0c0c );
+      scene.add( ambientLight );
+
+      // add spotlight for the shadows
+      var spotLight = new THREE.SpotLight( 0xffffff );
+      spotLight.position.set( -40, 60, -10 );
+      scene.add( spotLight );
+
+      //create tongs
+      var tongs_geometry = new THREE.BoxGeometry( 1.6, 1.6, 0.6 );
+      var tongs_material = new THREE.MeshLambertMaterial( {color: 0xff7777} );
+      var ts1 = new THREE.Mesh( tongs_geometry, tongs_material );
+      var ts2 = new THREE.Mesh( tongs_geometry, tongs_material );
+
+      //position tongs on the second cylinder
+      ts1.rotation.y = Math.PI / 2;
+      ts1.position.y = 3;
+      ts1.position.z = 2;
+      ts1.position.x = 3;
+      ts2.rotation.y = -Math.PI / 2;
+      ts2.position.y = 3;
+      ts2.position.z = 2;
+      ts2.position.x = -3;
+
+
+      //add tongs to the third object
+      o3.add( ts1 );
+      o3.add( ts2 );
+
+
+
+      // add axis helper
+      var axisHelper = new THREE.AxisHelper( 1 );
+      scene.add( axisHelper );
+
+      // add the output of the renderer to the html element
+      $( '#container' ).append( renderer.domElement );
+
+      // call the render function
+      var step = 0;
+
+      var controls = {
+        x: 0.01,
+        z: 0.01,
+        alpha: 0,
+        beta: 0,
+        gamma: 0,
+        delta: 0,
+        tongs: 1
+      };
+
+      var gui = new dat.GUI( );
+      var x_control = gui.add( controls, 'x', 0, 1);
+      var z_control = gui.add( controls, 'z', 0, 1);
+      var alpha_control = gui.add( controls, 'alpha', -180, 180 );
+      var beta_control = gui.add( controls, 'beta', -45, 45 );
+      var gamma_control = gui.add( controls, 'gamma', -180, 180 );
+      var delta_control = gui.add( controls, 'delta', -90, 90 ); //the exercise require 120 degrees but for avoid ovelapping i prefered to change range
+      var tongs_control = gui.add( controls, 'tongs', 0, 1 )
+
+      x_control.onChange( function ( value ) {
+        o0.position.x = 10 * value;
+        console.log(arguments);
+      } );
+
+      z_control.onChange( function ( value ) {
+        o0.position.z = 10 * value;
+      } );
+
+      alpha_control.onChange( function ( value ) {
+        s1.rotation.y = value / 180 * Math.PI;
+      } );
+
+      beta_control.onChange( function ( value ) {
+        o1.rotation.x = value / 180 * Math.PI;
+      } );
+
+      gamma_control.onChange( function ( value ){
+        s2.rotation.y = value / 180 * Math.PI;
+      } );
+
+      delta_control.onChange( function ( value ){
+        o2.rotation.x = value / 180 * Math.PI;
+      } );
+
+      tongs_control.onChange( function( value ){
+        ts1.position.x = 2.7 * value + 0.3;
+        ts2.position.x = -2.7 * value - 0.3;
+      } )
+
+      render( );
+
+      function render( ) {
+        stats.update( );
+        trackballControls.update( );
+
+        // render using requestAnimationFrame
+        requestAnimationFrame( render );
+        renderer.render(scene, camera );
+      }
+
+      function initStats( ) {
+        var stats = new Stats( );
+        stats.setMode( 0 ); // 0: fps, 1: ms
+        $( 'body' ).append( stats.domElement );
+        return stats;
+      }
+
+      $( '.dg.main' ).on( 'mousedown', function ( event ) {
+        event.stopPropagation();
+      });
+    });
+  </script>  
+ </body>
+</html>
